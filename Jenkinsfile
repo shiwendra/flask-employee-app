@@ -7,10 +7,21 @@ pipeline {
     stages {
 
 
+        stage('Create Virtual Environment') {
+            steps {
+                sh '''
+                    python3 --version
+                    python3 -m venv venv
+                '''
+            }
+        }
+
+
         stage('Install Dependencies') {
             steps {
                 sh '''
-                    python3 -m pip install -r requirements.txt
+                    ./venv/bin/python -m pip install --upgrade pip
+                    ./venv/bin/pip install -r requirements.txt
                 '''
             }
         }
@@ -19,10 +30,12 @@ pipeline {
         stage('Run Flask Application') {
             steps {
                 sh '''
-                    nohup python3 app.py > flask.log 2>&1 &
+                    nohup ./venv/bin/python app.py > flask.log 2>&1 &
                 '''
             }
         }
+
+
     }
 
 
@@ -36,3 +49,4 @@ pipeline {
             echo 'Pipeline execution failed!'
         }
     }
+}
